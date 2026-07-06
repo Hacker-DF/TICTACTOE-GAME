@@ -1,0 +1,341 @@
+/* ====== Jetons de design ======
+   Fond      : #12111c (encre profonde)
+   Surface   : #1c1a2b
+   Encre     : #efe9f5
+   Sourdine  : #8d89a8
+   Accent X  : #f0654a (braise)
+   Accent O  : #38b28c (mousse)
+   Display   : "Fraunces"  |  Corps : "Inter"  |  Data : "IBM Plex Mono"
+================================= */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root{
+  --fond: #12111c;
+  --surface: #1c1a2b;
+  --surface-haute: #262340;
+  --encre: #efe9f5;
+  --sourdine: #8d89a8;
+  --x: #f0654a;
+  --x-douce: rgba(240,101,74,0.18);
+  --o: #38b28c;
+  --o-douce: rgba(56,178,140,0.18);
+  --ligne: rgba(239,233,245,0.09);
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+body{
+  background:
+    radial-gradient(circle at 15% -10%, rgba(240,101,74,0.10), transparent 45%),
+    radial-gradient(circle at 90% 110%, rgba(56,178,140,0.10), transparent 45%),
+    var(--fond);
+  min-height: 100vh;
+  color: var(--encre);
+  font-family: "Inter", system-ui, sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 2.5rem 1rem 4rem;
+}
+
+.game{
+  width: 100%;
+  max-width: 440px;
+}
+
+/* Bouton info */
+#infoBtn{
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: 1px solid var(--ligne);
+  background: var(--surface);
+  color: var(--encre);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 1rem;
+  cursor: pointer;
+  z-index: 10;
+}
+#infoBtn:hover{ background: var(--surface-haute); }
+
+/* En-tête */
+.entete{ text-align: center; margin-bottom: 1.5rem; }
+.eyebrow{
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sourdine);
+  margin-bottom: 0.4rem;
+}
+h1{
+  font-family: "Fraunces", serif;
+  font-weight: 600;
+  font-size: 2.6rem;
+  font-optical-sizing: auto;
+  background: linear-gradient(120deg, var(--x), var(--encre) 55%, var(--o));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+#message{
+  text-align: center;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
+  color: var(--sourdine);
+  margin-bottom: 1.2rem;
+  min-height: 1.2em;
+}
+
+/* Plateau */
+.board{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  margin-bottom: 1.6rem;
+}
+
+.cell{
+  aspect-ratio: 1 / 1;
+  background: var(--surface);
+  border: 1px solid var(--ligne);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Fraunces", serif;
+  font-size: 2.6rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--encre);
+  transition: background 0.15s ease, transform 0.1s ease, border-color 0.15s ease;
+  position: relative;
+}
+.cell:hover{ background: var(--surface-haute); }
+.cell:active{ transform: scale(0.96); }
+.cell:focus-visible{
+  outline: 2px solid var(--o);
+  outline-offset: 2px;
+}
+
+.cell.x{ color: var(--x); }
+.cell.o{ color: var(--o); }
+
+.cell.pose{ animation: apparition 0.22s ease; }
+@keyframes apparition{
+  from{ transform: scale(0.5); opacity: 0; }
+  to{ transform: scale(1); opacity: 1; }
+}
+
+/* Pion fantôme : prévient qu'il va s'effacer au prochain tour du joueur */
+.cell.fantome{ animation: pulsation 1.1s ease-in-out infinite; }
+@keyframes pulsation{
+  0%, 100%{ opacity: 1; }
+  50%{ opacity: 0.35; }
+}
+
+/* Ligne gagnante */
+.cell.gagnante{
+  border-color: currentColor;
+  background: var(--surface-haute);
+  box-shadow: 0 0 0 1px currentColor inset;
+}
+
+/* Tableau des scores */
+.scoreboard{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.8rem;
+}
+.score-item{
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--ligne);
+  border-radius: 12px;
+  padding: 0.7rem 0.5rem;
+  text-align: center;
+}
+.score-x{ border-top: 2px solid var(--x); }
+.score-o{ border-top: 2px solid var(--o); }
+.score-label{
+  display: block;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--sourdine);
+  margin-bottom: 0.2rem;
+}
+.score-value{
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+.score-reset{
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 1px solid var(--ligne);
+  background: var(--surface);
+  color: var(--sourdine);
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 0.95rem;
+}
+.score-reset:hover{ color: var(--encre); background: var(--surface-haute); }
+
+/* Contrôles */
+.controls{
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  background: var(--surface);
+  border: 1px solid var(--ligne);
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+.controls > button{
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 10px;
+  background: var(--o);
+  color: #08231a;
+  font-weight: 600;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+.controls > button:hover{ filter: brightness(1.08); }
+
+.champ{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  color: var(--sourdine);
+}
+.champ select{
+  background: var(--surface-haute);
+  color: var(--encre);
+  border: 1px solid var(--ligne);
+  border-radius: 8px;
+  padding: 0.45rem 0.6rem;
+  font-family: inherit;
+  font-size: 0.88rem;
+}
+
+.champ-ligne{
+  display: flex;
+  gap: 0.6rem;
+}
+.case-check{
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  color: var(--sourdine);
+  background: var(--surface-haute);
+  border-radius: 8px;
+  padding: 0.5rem 0.6rem;
+  cursor: pointer;
+}
+.case-check input{ accent-color: var(--o); }
+
+.bouton-discret{
+  flex: 1;
+  background: transparent;
+  border: 1px solid var(--ligne);
+  color: var(--sourdine);
+  border-radius: 8px;
+  padding: 0.55rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.bouton-discret:hover{ color: var(--encre); border-color: var(--sourdine); }
+
+/* Tutoriel IA */
+.tutorielIA{
+  margin-top: 1.2rem;
+  background: var(--surface);
+  border: 1px solid var(--ligne);
+  border-radius: 14px;
+  padding: 1rem;
+}
+.tutorielIA h2{
+  font-family: "Fraunces", serif;
+  font-size: 1.1rem;
+  margin-bottom: 0.2rem;
+}
+.tutoriel-legende{
+  font-size: 0.78rem;
+  color: var(--sourdine);
+  margin-bottom: 0.7rem;
+}
+.grilleTutoriel{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+}
+.caseTutoriel{
+  aspect-ratio: 1 / 1;
+  background: var(--surface-haute);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
+  color: var(--sourdine);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.caseTutoriel.choisie{
+  background: var(--o-douce);
+  color: var(--o);
+  font-weight: 600;
+}
+
+/* Popup infos */
+.infoPopup{
+  display: none;
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: 90%;
+  max-width: 380px;
+  height: fit-content;
+  top: 0; bottom: 0;
+  background: var(--surface);
+  border: 1px solid var(--ligne);
+  border-radius: 16px;
+  padding: 1.4rem;
+  z-index: 20;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.infoPopup h2{ font-family: "Fraunces", serif; margin-bottom: 0.8rem; }
+.infoPopup ul{ padding-left: 1.1rem; color: var(--sourdine); font-size: 0.88rem; line-height: 1.6; }
+.infoPopup li{ margin-bottom: 0.5rem; }
+.infoPopup button{
+  display: block;
+  margin: 1rem auto 0;
+  padding: 0.6rem 1.4rem;
+  background: var(--x);
+  color: #2a0d06;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (max-width: 380px){
+  h1{ font-size: 2.1rem; }
+  .cell{ font-size: 2.1rem; }
+}
